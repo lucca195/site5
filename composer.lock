@@ -1,1 +1,38 @@
+{
+    "content-hash": "e0c7e1e3e7cf51ee6a83ed827e6217c2",
+    "packages": [
+        {
+            "name": "monolog/monolog",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "b0c0fddcfd0e5f29200803c4d812b9d19ed4a06d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/b0c0fddcfd0e5f29200803c4d812b9d19ed4a06d",
+                "reference": "b0c0fddcfd0e5f29200803c4d812b9d19ed4a06d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Monolog\\": "src/"
+                }
+            }
+        }
+    ],
+    "packages-dev": [],
+    "min-require": {
+        "php": "^7.2"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.3"
+        }
+    }
+}
 
