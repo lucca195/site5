@@ -36,7 +36,6 @@ def check_password(stored_hash, password):
 def index():
     if 'user_id' in session:
         return redirect(url_for('user_balance'))
-
     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -110,6 +109,65 @@ def user_balance():
     conn.close()
 
     return render_template('user_balance.html', balance=balance)
+
+@app.route('/user/pay', methods=['GET', 'POST'])
+def user_pay():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        amount = float(request.form['amount'])
+        user_id = session['user_id']
+
+        # Criar uma preferência de pagamento
+        preference_data = {
+            "items": [
+                {
+                    "title": "Pagamento de Saldo",
+                    "quantity": 1,
+                    "unit_price": amount
+                }
+            ],
+            "back_urls": {
+                "success": url_for('payment_success', _external=True),
+                "failure": url_for('payment_failure', _external=True),
+                "pending": url_for('payment_pending', _external=True)
+            },
+            "auto_return": "approved"
+        }
+
+        preference = sdk.preference().create(preference_data)
+        preference_id = preference['response']['id']
+
+        return redirect(preference['response']['init_point'])
+
+    return render_template('user_pay.html')
+
+@app.route('/payment/success')
+def payment_success():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+
+    # Atualiza o saldo do usuário
+    user_id = session['user_id']
+    amount = request.args.get('amount', type=float, default=0.0)
+
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    cur.execute('UPDATE users SET balance = balance + %s WHERE id = %s', (amount, user_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return render_template('payment_success.html', amount=amount)
+
+@app.route('/payment/failure')
+def payment_failure():
+    return render_template('payment_failure.html')
+
+@app.route('/payment/pending')
+def payment_pending():
+    return render_template('payment_pending.html')
 
 @app.route('/logout')
 def logout():
